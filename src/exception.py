@@ -3,7 +3,7 @@
 # look into the exception documentation for python online for some standard codes
 
 import sys
-import logging
+from src.logger import logging
 
 # def error_message_detail(error, error_detail:sys): -> the ":sys" syntax is called Type annotation or type hinting, 
 # we're kind of indicating what datatype of value that parameter is expected to have; 
