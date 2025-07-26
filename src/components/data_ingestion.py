@@ -25,13 +25,13 @@ class DataIngestion:
         logging.info("Entered the data ingestion component.")
         try:
             # it doesn't have to be a csv file, can be any type of database we're reading from
-            df = pd.read_csv(r"C:\\Users\\aleen\\OneDrive\\Desktop\\Work\\Data Analyst\\Portfolio\dsproject\\notebook\\data\\Preprocessed_StudentsPerformance.csv")
+            df = pd.read_csv(r"C:\\Users\\aleen\\OneDrive\\Desktop\\Work\\Data Analyst\\Portfolio\\dsproject\\notebook\\data\\Preprocessed_StudentsPerformance.csv")
             logging.info("Read the dataset as dataframe.")
 
             # creating the 'artifact' directory
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)
             # add artifacts in gitignore so that it doesn't get saved
-            
+
             # saving the raw data
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
 
