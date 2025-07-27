@@ -27,8 +27,12 @@ class DataIngestion:
         logging.info("Entered the data ingestion component.")
         try:
             # it doesn't have to be a csv file, can be any type of database we're reading from
-            df = pd.read_csv(r"C:\\Users\\aleen\\OneDrive\\Desktop\\Work\\Data Analyst\\Portfolio\\dsproject\\notebook\\data\\Preprocessed_StudentsPerformance.csv")
+            df = pd.read_csv("C:\\Users\\aleen\\OneDrive\\Desktop\\Work\\Data Analyst\\Portfolio\\dsproject\\data\\StudentsPerformance.csv")
             logging.info("Read the dataset as dataframe.")
+
+            df.columns = df.columns.str.replace(" ", "_")
+            df.rename(columns={'race/ethnicity':'race_ethnicity'}, inplace=True)
+            logging.info("Column names of dataset formatted.")
 
             # creating the 'artifact' directory
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)

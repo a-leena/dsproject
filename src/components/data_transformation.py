@@ -21,14 +21,11 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
 
-    def get_data_transformer_obj(self):
+    def get_data_transformer_obj(self, numerical_cols, categorical_cols):
         '''
         This function is responsible for data transformation.
         '''
         try:
-            numerical_cols = ['math_score', 'reading_score', 'writing_score']
-            categorical_cols = ['gender', 'race_ethnicity', 'parental_level_of_education', 'lunch', 'test_preparation_course']
-
             # we will combine in this pipeline processes like handling missing values with imputation and applying standard scaler
             numerical_pipeline = Pipeline(
                 steps=[
@@ -71,29 +68,36 @@ class DataTransformation:
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
-
             logging.info("Read Train and Test data.")
 
+            numerical_features = train_df.select_dtypes(exclude="object").columns
+            categorical_features = train_df.select_dtypes(include="object").columns
+
             logging.info("Obtaining preprocessor object.")
-            preprocessor = self.get_data_transformer_obj()
+            preprocessor = self.get_data_transformer_obj(numerical_cols=numerical_features, categorical_cols=categorical_features)
 
-            target_column_name = 'average_score'
+            target_column_name = 'math_score'
 
-            input_feature_train_df = train_df.drop(columns=[target_column_name, 'total_score'], axis=1)
-            target_feature_train_df = train_df[target_column_name]
-            print(input_feature_train_df)
+            # input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
+            # target_feature_train_df = train_df[target_column_name]
 
-            input_feature_test_df = test_df.drop(columns=[target_column_name, 'total_score'], axis=1)
-            target_feature_test_df = test_df[target_column_name]
-            print(input_feature_test_df)
+            train_df[target_column_name] = train_df.pop(target_column_name)
+            print(train_df.sample(10))
+
+            # input_feature_test_df = test_df.drop(columns=[target_column_name,], axis=1)
+            # target_feature_test_df = test_df[target_column_name]
+
+            test_df[target_column_name] = test_df.pop(target_column_name)
+            print(test_df.sample(10))
 
             logging.info("Applying preprocessor object on training and testing dataframes.")
-            input_feature_train_array = preprocessor.fit_transform(input_feature_train_df)
-            input_feature_test_array = preprocessor.transform(input_feature_test_df) # we do transform using the preprocessor model that has been fit to the train dataset above
+            train_array = preprocessor.fit_transform(train_df)
+            # we do transform using the preprocessor model that has been fit to the train dataset above
+            test_array = preprocessor.transform(test_df) 
 
             # combining the i/p and target features into a single array
-            train_array = np.c_[input_feature_train_array, np.array(target_feature_train_df)]
-            test_array = np.c_[input_feature_test_array, np.array(target_feature_test_df)]
+            # train_array = np.c_[input_feature_train_array, np.array(target_feature_train_df)]
+            # test_array = np.c_[input_feature_test_array, np.array(target_feature_test_df)]
 
             save_object(
                 file_path = self.data_transformation_config.preprocessor_obj_file_path,
