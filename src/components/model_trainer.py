@@ -82,7 +82,7 @@ class ModelTrainer:
                                                 test_array[:,:-1], 
                                                 test_array[:,-1])
             
-            model_r2_report, model_param_report = evaluate_models(
+            best_model, model_r2_report, model_param_report = evaluate_models(
                 X_train=X_train, y_train=y_train, 
                 X_test=X_test, y_test=y_test, 
                 models=self.model_evaluator_config.models,
@@ -98,7 +98,7 @@ class ModelTrainer:
 
             best_model_name = list(model_r2_report.keys())[list(model_r2_report.values()).index(best_model_score)]
             best_model_params = model_param_report[best_model_name]
-            best_model = self.model_evaluator_config.models[best_model_name]
+            
             logging.info("Best model found.")
 
             save_object(

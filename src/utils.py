@@ -18,6 +18,13 @@ def save_object(file_path, object):
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+def load_object(file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            return dill.load(file)
+    except Exception as e:
+        raise CustomException(e, sys)
 
 def evaluate_models(X_train, y_train, X_test, y_test, models, params):
     try:
@@ -58,7 +65,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, params):
             r2_report[list(models.keys())[i]] = r2
             params_report[list(models.keys())[i]] = best_params
         
-        return r2_report, params_report
+        return best_model, r2_report, params_report
      
     except Exception as e:
         raise CustomException(e, sys)

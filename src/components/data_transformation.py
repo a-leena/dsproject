@@ -70,34 +70,41 @@ class DataTransformation:
             test_df = pd.read_csv(test_path)
             logging.info("Read Train and Test data.")
 
-            numerical_features = train_df.select_dtypes(exclude="object").columns
+            target_column_name = 'math_score'
+            numerical_features = list(train_df.select_dtypes(exclude="object").columns)
+            numerical_features.remove(target_column_name)
             categorical_features = train_df.select_dtypes(include="object").columns
+            print(numerical_features)
+            print(categorical_features)
 
             logging.info("Obtaining preprocessor object.")
             preprocessor = self.get_data_transformer_obj(numerical_cols=numerical_features, categorical_cols=categorical_features)
 
-            target_column_name = 'math_score'
+            input_features_train_df = train_df.drop(columns=[target_column_name], axis=1)
+            target_feature_train_df = train_df[target_column_name]
 
-            # input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
-            # target_feature_train_df = train_df[target_column_name]
+            # train_df[target_column_name] = train_df.pop(target_column_name)
+            print(input_features_train_df.head(10))
+            print(target_feature_train_df.head(10))
 
-            train_df[target_column_name] = train_df.pop(target_column_name)
-            print(train_df.sample(10))
+            input_features_test_df = test_df.drop(columns=[target_column_name,], axis=1)
+            target_feature_test_df = test_df[target_column_name]
 
-            # input_feature_test_df = test_df.drop(columns=[target_column_name,], axis=1)
-            # target_feature_test_df = test_df[target_column_name]
-
-            test_df[target_column_name] = test_df.pop(target_column_name)
-            print(test_df.sample(10))
+            # test_df[target_column_name] = test_df.pop(target_column_name)
+            print(input_features_test_df.head(10))
+            print(target_feature_test_df.head(10))
 
             logging.info("Applying preprocessor object on training and testing dataframes.")
-            train_array = preprocessor.fit_transform(train_df)
+            input_features_train_array = preprocessor.fit_transform(input_features_train_df)
             # we do transform using the preprocessor model that has been fit to the train dataset above
-            test_array = preprocessor.transform(test_df) 
+            input_features_test_array = preprocessor.transform(input_features_test_df) 
 
             # combining the i/p and target features into a single array
-            # train_array = np.c_[input_feature_train_array, np.array(target_feature_train_df)]
-            # test_array = np.c_[input_feature_test_array, np.array(target_feature_test_df)]
+            train_array = np.c_[input_features_train_array, np.array(target_feature_train_df)]
+            test_array = np.c_[input_features_test_array, np.array(target_feature_test_df)]
+
+            print(train_array[:10])
+            print(test_array[:10])
 
             save_object(
                 file_path = self.data_transformation_config.preprocessor_obj_file_path,
@@ -108,9 +115,6 @@ class DataTransformation:
             return (train_array, 
                     test_array, 
                     self.data_transformation_config.preprocessor_obj_file_path)
-
-
-
 
 
         except Exception as e:
